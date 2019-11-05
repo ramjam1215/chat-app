@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { map, filter, combineLatest, scan } from 'rxjs/operators';
+/*
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/combineLatest';
-
+*/
 import { MessagesService } from '../message/messages.service';
 import { Message } from '../message/message.model';
 import { Thread } from './thread.model';
 //import { User } from '../user/user.model';
 import * as _ from 'lodash';
-
-
 
 @Injectable()
 export class ThreadsService {
@@ -27,8 +27,8 @@ export class ThreadsService {
 
   constructor(public messagesService: MessagesService) {
 
-    this.threads = messagesService.messages
-      .map((messages: Message[]) => {
+    this.threads = messagesService.messages.pipe(
+      map((messages: Message[]) => {
         const threads: { [key: string]: Thread } = {};
 
         messages.map((message: Message) => {
@@ -43,20 +43,22 @@ export class ThreadsService {
         });
 
         return threads;
-      });
+      })
+    );
 
     //-----------------------------------------------------------------------------
 
-    this.orderedThreads = this.threads
-      .map((threadGroups: { [key: string]: Thread }) => {
+    this.orderedThreads = this.threads.pipe(
+      map((threadGroups: { [key: string]: Thread }) => {
         const threads: Thread[] = _.values(threadGroups);
         return _.sortBy(threads, (t: Thread) => t.lastMessage.sentAt).reverse();
-      });
+      })
+    );
 
     //----------------------------------------------------------------------------
 
-    this.currentThreadMessages = this.currentThread
-      .combineLatest(messagesService.messages,
+    this.currentThreadMessages = this.currentThread.pipe(
+      combineLatest( messagesService.messages,
       (currentThread: Thread, messages: Message[]) => {
         if (currentThread && messages.length > 0) {
           return _.chain(messages).filter((message: Message) => (message.thread.id === currentThread.id))
@@ -67,7 +69,8 @@ export class ThreadsService {
         }
 
         else { return []; }
-      });
+        })
+    );
 
     this.currentThread.subscribe(this.messagesService.markThreadAsRead);
   }
@@ -81,5 +84,4 @@ export class ThreadsService {
 export const threadsServiceInjectables: Array<any> = [
   ThreadsService
 ];
-
 
