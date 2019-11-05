@@ -1,5 +1,7 @@
 # ChatApp
 By: James Corcoran
+11-5-2019
+- I have been trying for the past few days to get the basic example up and running to no avail. Almost everything is good except for the chat-message-component. Its just not getting the information from the services or the @Input decorator. I'm stuck in a rut. I will spend the next two days i have left to get the actual firebase stuff going, and the route guards. Not to mention i haven't even gotten a chance to start the final project because of this.
 
 11-1-2019
 - started chat-app, reading/tutorial from ng-book.
