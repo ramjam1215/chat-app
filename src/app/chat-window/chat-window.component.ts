@@ -10,7 +10,8 @@ import { UsersService } from '../user/users.service';
 @Component({
   selector: 'chat-window',
   templateUrl: './chat-window.component.html',
-  styleUrls: ['./chat-window.component.css']
+  styleUrls: ['./chat-window.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
@@ -31,12 +32,14 @@ export class ChatWindowComponent implements OnInit {
 
     this.draftMessage = new Message();
 
-    this.threadsService.currentThread.subscribe((thread: Thread) => {
-      this.currentThread = thread;
+    this.threadsService.currentThread.subscribe(
+      (thread: Thread) => {
+        this.currentThread = thread;
     });
 
-    this.UsersService.currentUser.subscribe((user: User) => {
-      this.currentUser = user;
+    this.UsersService.currentUser.subscribe(
+      (user: User) => {
+        this.currentUser = user;
     });
 
     //need setTimeout or we will scroll to the bottom,
@@ -51,6 +54,12 @@ export class ChatWindowComponent implements OnInit {
 
   }
 
+  onEnter(event: any): void {
+    this.sendMessage();
+    event.preventDefault();
+  }
+
+
   sendMessage(): void {
     const m: Message = this.draftMessage;
     m.author = this.currentUser;
@@ -60,10 +69,6 @@ export class ChatWindowComponent implements OnInit {
     this.draftMessage = new Message();
   }
 
-  onEnter(event: any): void {
-    this.sendMessage();
-    event.preventDefault();
-  }
 
   scrollToBottom(): void {
     const scrollPane: any = this.el
